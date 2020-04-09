@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-.common-text, .light-text {
+.common-text, .light-text, .speaker-text {
 	color: black;
 	line-height: 1.5;
 }
@@ -15,6 +15,10 @@
 	margin-right: 3px;
 	border:1px solid #3399FF;
 	background: #3399FF;
+}
+
+.speaker-text {
+	color: red;
 }
 
 .insert-image {

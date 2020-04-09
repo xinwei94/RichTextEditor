@@ -5,6 +5,7 @@ import com.xinwei.lib_richtext.entities.ImageRichInfo;
 import com.xinwei.lib_richtext.entities.ImageTextRichInfo;
 import com.xinwei.lib_richtext.entities.MoreBtnItemInfo;
 import com.xinwei.lib_richtext.entities.RichTextData;
+import com.xinwei.lib_richtext.entities.SpeakerInfo;
 import com.xinwei.lib_richtext.entities.TextRichInfo;
 
 
@@ -48,6 +49,13 @@ public interface IEditorLisenter {
      * @param richTextInfo 宿主富文本信息
      */
     void onClickMoreBtnItem(MoreBtnItemInfo itemInfo, BaseRichTextInfo richTextInfo);
+
+    /**
+     * 点击发言人
+     *
+     * @param speakerInfo 发言人信息
+     */
+    void onClickSpeaker(SpeakerInfo speakerInfo);
 
     /**
      * 文档内容更新

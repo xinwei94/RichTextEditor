@@ -73,6 +73,16 @@
         android:layout_gravity="right|bottom"
         android:text="播放"/>
 
+    <Button
+        android:id="@+id/btn_font_size"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="80dp"
+        android:layout_gravity="right|bottom"
+        android:textSize="9sp"
+        android:text="调节字体"/>
+
     <LinearLayout
         android:id="@+id/edit_insert_part"
         android:layout_width="80dp"

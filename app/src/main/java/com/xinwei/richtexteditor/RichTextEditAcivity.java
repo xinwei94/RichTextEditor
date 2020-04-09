@@ -1,11 +1,15 @@
 package com.xinwei.richtexteditor;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +21,7 @@ import com.xinwei.lib_richtext.entities.ImageRichInfo;
 import com.xinwei.lib_richtext.entities.ImageTextRichInfo;
 import com.xinwei.lib_richtext.entities.MoreBtnItemInfo;
 import com.xinwei.lib_richtext.entities.RichTextData;
+import com.xinwei.lib_richtext.entities.SpeakerInfo;
 import com.xinwei.lib_richtext.entities.TextRichInfo;
 import com.xinwei.lib_richtext.interfaces.IEditorLisenter;
 import com.xinwei.lib_richtext.interfaces.IEditorSaveDocLisenter;
@@ -44,6 +49,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
     private Button mSaveBtn;
     private Button mCancelBtn;
     private Button mSaveDocBtn;
+    private Button mFontSizeBtn;
 
     private View mEditInsertPart;
     private Button mInsertTextBtn;
@@ -80,6 +86,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         mSaveBtn = findViewById(R.id.btn_save);
         mCancelBtn = findViewById(R.id.btn_cancel);
         mSaveDocBtn = findViewById(R.id.btn_doc);
+        mFontSizeBtn = findViewById(R.id.btn_font_size);
 
         mEditInsertPart = findViewById(R.id.edit_insert_part);
         mInsertTextBtn = findViewById(R.id.btn_insert_text);
@@ -91,6 +98,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         mSaveBtn.setOnClickListener(this);
         mCancelBtn.setOnClickListener(this);
         mSaveDocBtn.setOnClickListener(this);
+        mFontSizeBtn.setOnClickListener(this);
         mInsertTextBtn.setOnClickListener(this);
         mInsertImageBtn.setOnClickListener(this);
         mInsertmageTextBtn.setOnClickListener(this);
@@ -165,6 +173,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         mEditBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
         mPlayBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
         mSaveDocBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
+        mFontSizeBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
         mSaveBtn.setVisibility(isEdit ? View.VISIBLE : View.GONE);
         mCancelBtn.setVisibility(isEdit ? View.VISIBLE : View.GONE);
         mEditInsertPart.setVisibility(isEdit ? View.VISIBLE : View.GONE);
@@ -198,7 +207,9 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         return RichTextSaveHelper.getRichTextData();
     }
 
+
     private void saveDoc() {
+
         mEditor.saveDocFile(new IEditorSaveDocLisenter() {
             @Override
             public void onSaveContent(String content) {
@@ -206,6 +217,75 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
                 showToast("Doc文档已保存到" + RichTextSaveHelper.DOC_FILE_PATH);
             }
         });
+    }
+
+    private void showSpeaker(boolean isShow) {
+        mEditor.setShowSpeaker(isShow);
+    }
+
+    private void showRenameDialog(final SpeakerInfo speakerInfo) {
+        final EditText editText = new EditText(RichTextEditAcivity.this);
+        editText.setText(speakerInfo.getName());
+        AlertDialog.Builder builder = new AlertDialog.Builder(RichTextEditAcivity.this);
+        builder.setTitle("发言人重命名");
+        builder.setView(editText);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Log.d(TAG, "onClickPositive() " + Thread.currentThread().getName());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "onClickPositive() run " + Thread.currentThread().getName());
+                        String name = editText.getText().toString();
+                        mEditor.renameSpeaker(speakerInfo.getName(), name);
+                    }
+                });
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void showFontSizeDialog() {
+        final SeekBar seekBar = new SeekBar(RichTextEditAcivity.this);
+        seekBar.setMax(50);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mEditor.setFontSize(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(RichTextEditAcivity.this);
+        builder.setTitle("调节字体");
+        builder.setView(seekBar);
+        builder.setNegativeButton("关闭", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
     @Override
@@ -256,6 +336,11 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         }
 
         @Override
+        public void onClickSpeaker(SpeakerInfo speakerInfo) {
+            showRenameDialog(speakerInfo);
+        }
+
+        @Override
         public void updateContent(RichTextData richTextData) {
             showToast("保存成功");
             RichTextSaveHelper.setRichTextData(richTextData);
@@ -297,6 +382,9 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
                 break;
             case R.id.btn_insert_image_text:
                 insertImageWithText();
+                break;
+            case R.id.btn_font_size:
+                showFontSizeDialog();
                 break;
             default:
                 break;

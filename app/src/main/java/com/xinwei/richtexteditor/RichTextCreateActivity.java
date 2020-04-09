@@ -17,6 +17,7 @@ import com.xinwei.lib_richtext.entities.ImageRichInfo;
 import com.xinwei.lib_richtext.entities.ImageTextRichInfo;
 import com.xinwei.lib_richtext.entities.MoreBtnItemInfo;
 import com.xinwei.lib_richtext.entities.RichTextData;
+import com.xinwei.lib_richtext.entities.SpeakerInfo;
 import com.xinwei.lib_richtext.entities.TextRichInfo;
 import com.xinwei.lib_richtext.interfaces.IEditorLisenter;
 
@@ -40,6 +41,7 @@ public class RichTextCreateActivity extends Activity implements View.OnClickList
     private TextView mImageCountTextView;
 
     private int mIndex;
+    private int mSpeakerIndex;
 
     private String[] mContentArray;
 
@@ -85,7 +87,10 @@ public class RichTextCreateActivity extends Activity implements View.OnClickList
         double startTime = mIndex + 0.1;
         double endTime = startTime + 1;
         String content = mContentArray[mIndex % mContentArray.length];
-        mEditor.addText(mIndex, startTime, endTime, content);
+        String speaker = "发言人" + (mSpeakerIndex++ / 10) + ":";
+        if (mSpeakerIndex >= 50) mSpeakerIndex = 0;
+
+        mEditor.addText(mIndex, startTime, endTime, content, speaker);
 
         mIndex++;
         refreshShowCount(content.length(), 0);
@@ -109,7 +114,7 @@ public class RichTextCreateActivity extends Activity implements View.OnClickList
     }
 
     private void insertTempLight() {
-        String content = mContentArray[(int)(System.currentTimeMillis() % mContentArray.length)];
+        String content = mContentArray[(int) (System.currentTimeMillis() % mContentArray.length)];
         mEditor.insertTempLight(content);
     }
 
@@ -160,6 +165,11 @@ public class RichTextCreateActivity extends Activity implements View.OnClickList
 
         @Override
         public void onClickMoreBtnItem(MoreBtnItemInfo itemInfo, BaseRichTextInfo richTextInfo) {
+
+        }
+
+        @Override
+        public void onClickSpeaker(SpeakerInfo speakerInfo) {
 
         }
 

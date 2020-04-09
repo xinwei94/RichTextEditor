@@ -13,6 +13,15 @@ var contentJson;//存储内容数据
 
 var mIsEdit = false;//是否为编辑状态
 
+var mFontSize = 0;//字体大小
+
+//发言人相关
+var mIsShowSpeaker = false;
+var mLastSpeaker;
+var mSpeakerColorIndex = 0;
+var mSpeakerColorMap = new Map();
+var mSpeakerColorArray = ['#FF0000','#9ACD32','#0000FF','#008B00','#C71585','#EE9A49','#D15FEE','#8B5A00'];
+
 //设置文本
 function setContent(json) {
 	console.log('setContent() json = ' + json);
@@ -42,7 +51,7 @@ function refreshContent(datalist) {
 		} else if (TYPE_IMAGE_TEXT == type) {
 			addImageWithText(datalist[i].imageUrl, datalist[i].index, datalist[i].startTime, datalist[i].content, false);
 		} else {
-			addText(datalist[i].content, datalist[i].index, datalist[i].startTime, datalist[i].endTime, false);
+			addText(datalist[i].content, datalist[i].index, datalist[i].startTime, datalist[i].endTime, datalist[i].speaker, false);
 		}
 		
 	}
@@ -156,12 +165,19 @@ function cancelEdit() {
 }
 
 //添加文本
-function addText(content, index, startTime, endTime, isScroll) {
+function addText(content, index, startTime, endTime, speaker, isScroll) {
 	console.log('addText() index = ' + index + ", startTime = " + startTime 
-		+ ", endTime = " + endTime + ", isScroll = " + isScroll + ", content = " + content);
+		+ ", endTime = " + endTime + ", isScroll = " + isScroll + ", speaker = " + speaker + ", content = " + content);
 	
-	var span = createTextElement(content, index, startTime, endTime, mIsEdit); 
+	var span = createTextElement(content, index, startTime, endTime, speaker, mFontSize, mIsEdit); 
 	document.getElementById('content').appendChild(span);
+
+	if (null != speaker && mLastSpeaker != speaker) {
+		var speakerSpan = createSpeakerElement(speaker, index, mFontSize, mIsEdit, mIsShowSpeaker);
+		document.getElementById('content').insertBefore(speakerSpan, span);
+		insertOrRemoveSpeakerLineFeed(mIsShowSpeaker, speakerSpan);
+		mLastSpeaker = speaker;
+	}
 
 	//滚动以确保元素显示
 	if (isScroll) {
@@ -175,7 +191,7 @@ function insertText(content, index, startTime, endTime, isScroll) {
 		+ ", endTime = " + endTime + ", isScroll = " + isScroll + ", content = " + content);
 
 	var nextElement = getInsertPositionElement(startTime);
-	var span = createTextElement(content, index, startTime, endTime, mIsEdit);
+	var span = createTextElement(content, index, startTime, endTime, null, mFontSize, mIsEdit);
 	document.getElementById('content').insertBefore(span, nextElement);
 
 	if (isScroll) {
@@ -251,6 +267,7 @@ function insertTempLight(content) {
 	var span = document.createElement('span');
 	span.innerHTML = content;
 	span.className = 'insert-temp-light';
+	if (mFontSize > 0) span.style.fontSize = mFontSize + 'px';
 
 	document.getElementById('content').appendChild(span);
 
@@ -328,12 +345,98 @@ function changeContentState(isEdit) {
 	}
 }
 
+//设置显示或隐藏发言人
+function setShowSpeaker(isShow) {
+	console.log('setShowSpeaker() isShow = ' + isShow);
+	if (isShow == mIsShowSpeaker) {
+		return;
+	}
+
+	mIsShowSpeaker = isShow;
+	var speakerList = document.getElementsByClassName('speaker-text');
+	for (var i = 0; i < speakerList.length; i++) {
+		speakerList[i].style.display = isShow ? "inline" : "none";	
+		insertOrRemoveSpeakerLineFeed(isShow, speakerList[i]);
+	}
+}
+
+
+//发言人重命名
+function ranameSpeaker(oldname, newname) {
+	console.log('ranameSpeaker() oldname = ' + oldname + ', newname' + newname);
+	var speakerList = document.getElementsByClassName('speaker-text');
+	for (var i = 0; i < speakerList.length; i++) {
+		if (oldname == speakerList[i].dataset['speaker']) {
+			speakerList[i].dataset['speaker'] = newname;
+			speakerList[i].innerHTML = newname;
+		}
+	}
+
+	var commonList = document.getElementsByClassName('common-text');
+	for (var i = 0; i < commonList.length; i++) {
+		if (oldname == commonList[i].dataset['speaker']) {
+			commonList[i].dataset['speaker'] = newname;
+		}
+	}
+}
+
+//设置字体大小
+function setFontSize(size) {
+	console.log('setFontSize() size = ' + size);
+	if (size <= 0) {
+		return;
+	}
+
+	mFontSize = size;
+	var commonList = document.getElementsByClassName('common-text');
+	for (var i = 0; i < commonList.length; i++) {
+		commonList[i].style.fontSize = size + 'px';
+	}
+
+	var lightList = document.getElementsByClassName('light-text');
+	for (var i = 0; i < lightList.length; i++) {
+		lightList[i].style.fontSize = size + 'px';
+	}
+
+	var editList = document.getElementsByClassName('edit-text');
+	for (var i = 0; i < editList.length; i++) {
+		editList[i].style.fontSize = size + 'px';
+	}
+
+	var speakerList = document.getElementsByClassName('speaker-text');
+	for (var i = 0; i < speakerList.length; i++) {
+		speakerList[i].style.fontSize = size + 'px';
+	}
+
+}
+
+//插入或移除发音人换行符
+function insertOrRemoveSpeakerLineFeed(isInsert, speakerNode) {
+	var preNode = speakerNode.previousSibling;  //得到上一个兄弟节点
+	if (isInsert && null != preNode) {
+		var span = createLineFeedElement("speaker-line-feed", "30px");
+		document.getElementById('content').insertBefore(span, speakerNode);
+	} else {
+		if (null != preNode && preNode.id == "speaker-line-feed") {
+			document.getElementById('content').removeChild(preNode);
+		}
+	}
+}
+
 function textClick(event) {
 	console.log('textClick()');
 	event.stopPropagation();//span需要禁止冒泡事件
 	var span = event.target;
 	//通知安卓端
 	window.jsInterface.clickText(JSON.stringify(getTextData(span)));
+}
+
+function speakerClick(event) {
+	console.log('speakerClick()');
+	event.stopPropagation();//span需要禁止冒泡事件
+	var span = event.target;
+	//通知安卓端
+	window.jsInterface.clickSpeaker(JSON.stringify(getSpeakerData(span)));
 }
 
 function imageClick(event) {
@@ -388,15 +491,31 @@ function getInsertPositionElement(startTime) {
 	return nextElement;
 }
 
-function createTextElement(content, index, startTime, endTime, isEdit) {
+function createTextElement(content, index, startTime, endTime, speaker, size, isEdit) {
 	var span = document.createElement('span');
 	span.dataset['index'] = index;
 	span.dataset['startTime'] = startTime;
 	span.dataset['endTime'] = endTime;
+	span.dataset['speaker'] = speaker;
 	span.innerHTML = content;
 	span.className = isEdit ? 'edit-text' : 'common-text';
 	span.setAttribute("contenteditable", isEdit);
 	span.addEventListener("click", textClick); 
+	if (size > 0) span.style.fontSize = size + 'px';
+
+	return span;
+}
+
+function createSpeakerElement(speaker, index, size, isEdit, isShow) {
+	var span = document.createElement('span');
+	span.dataset['speaker'] = speaker;
+	span.innerHTML = speaker;
+	span.className = 'speaker-text';
+	span.style.color = getSpeakerColor(speaker);
+	span.style.display = isShow ? "inline" : "none";
+	span.setAttribute("contenteditable", isEdit);
+	span.addEventListener("click", speakerClick); 
+	if (size > 0) span.style.fontSize = size + 'px';
 
 	return span;
 }
@@ -437,6 +556,31 @@ function createImageWithText(url, index, startTime, content, isEdit) {
 	return p;
 }
 
+function createLineFeedElement(id, marginTop) {
+	var span = document.createElement('span');
+	span.id = id;
+	span.style.display = "block";	
+	span.style.marginTop = marginTop;
+
+	return span;
+}
+
+//获取发言人颜色
+function getSpeakerColor(speaker) {
+	var color = mSpeakerColorMap.get(speaker);
+	if (null != color) {
+		return color;
+	}
+
+	if (mSpeakerColorIndex >= mSpeakerColorArray.length) {
+		mSpeakerColorIndex = 0;
+	}
+
+	color = mSpeakerColorArray[mSpeakerColorIndex++];
+	mSpeakerColorMap.set(speaker, color);
+	return color;
+}
+
 //获取当前文档数据
 function getCurrentData() {
 	console.log('getCurrentData()');
@@ -471,7 +615,14 @@ function getTextData(elm) {
 		"index": elm.dataset['index'], 
 		"startTime": elm.dataset['startTime'], 
 		"endTime": elm.dataset['endTime'],
+		"speaker": elm.dataset['speaker'],
 		"content": elm.innerHTML};
+}
+
+//获取发言人元素数据
+function getSpeakerData(elm) {
+	return {
+		"name": elm.dataset['speaker']};
 }
 
 //获取图片元素数据

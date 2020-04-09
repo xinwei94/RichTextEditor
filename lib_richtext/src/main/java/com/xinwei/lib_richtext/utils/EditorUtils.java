@@ -16,6 +16,7 @@ import com.xinwei.lib_richtext.entities.ImageTextRichInfo;
 import com.xinwei.lib_richtext.entities.MoreBtnItemInfo;
 import com.xinwei.lib_richtext.entities.RichTextData;
 import com.xinwei.lib_richtext.entities.RichTextType;
+import com.xinwei.lib_richtext.entities.SpeakerInfo;
 import com.xinwei.lib_richtext.entities.TextRichInfo;
 
 import java.io.File;
@@ -85,6 +86,10 @@ public class EditorUtils {
 
     public static MoreBtnItemInfo parseMoreBtnItemInfo(String json) {
         return new Gson().fromJson(json, MoreBtnItemInfo.class);
+    }
+
+    public static SpeakerInfo parseSpeakerInfo(String json) {
+        return new Gson().fromJson(json, SpeakerInfo.class);
     }
 
     /**

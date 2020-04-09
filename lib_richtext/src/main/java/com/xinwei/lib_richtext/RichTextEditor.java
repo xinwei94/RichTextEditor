@@ -19,6 +19,7 @@ import com.xinwei.lib_richtext.entities.ImageRichInfo;
 import com.xinwei.lib_richtext.entities.ImageTextRichInfo;
 import com.xinwei.lib_richtext.entities.MoreBtnItemInfo;
 import com.xinwei.lib_richtext.entities.RichTextData;
+import com.xinwei.lib_richtext.entities.SpeakerInfo;
 import com.xinwei.lib_richtext.entities.TextRichInfo;
 import com.xinwei.lib_richtext.interfaces.IEditorJsLisenter;
 import com.xinwei.lib_richtext.interfaces.IEditorLisenter;
@@ -122,11 +123,12 @@ public class RichTextEditor extends WebView {
      * @param startTime 文本起始时间
      * @param endTime   文本结束时间
      * @param content   文本内容
+     * @param speaker   发言人
      */
-    public void addText(int index, double startTime, double endTime, String content) {
+    public void addText(int index, double startTime, double endTime, String content, String speaker) {
         Log.d(TAG, "addText() index = " + index + ", startTime = " + startTime
                 + ", endTime = " + endTime + ", content = " + content);
-        exec("javascript:addText('" + content + "','" + index + "','" + startTime + "','" + endTime + "', true);");
+        exec("javascript:addText('" + content + "','" + index + "','" + startTime + "','" + endTime + "','" + speaker + "', true);");
     }
 
     /**
@@ -240,6 +242,11 @@ public class RichTextEditor extends WebView {
         exec("javascript:saveDocFile();");
     }
 
+    /**
+     * 设置自定义更多按钮
+     *
+     * @param moreBtnItemInfos 按钮条目信息
+     */
     public void setMoreBtn(List<MoreBtnItemInfo> moreBtnItemInfos) {
         Log.d(TAG, "setMoreBtn() moreBtnItemInfos = " + moreBtnItemInfos);
 
@@ -247,6 +254,37 @@ public class RichTextEditor extends WebView {
         Log.d(TAG, "setMoreBtn() moreBtnJson = " + moreBtnJson);
 
         exec("javascript:setMoreBtn('" + moreBtnJson + "');");
+    }
+
+    /**
+     * 设置显示或隐藏发言人
+     *
+     * @param isShow 是否显示
+     */
+    public void setShowSpeaker(boolean isShow) {
+        Log.d(TAG, "setShowSpeaker() isShow = " + isShow);
+        exec("javascript:setShowSpeaker(" + isShow  + ");");
+    }
+
+    /**
+     * 发言人重命名
+     *
+     * @param oldname 原名称
+     * @param newname 新名称
+     */
+    public void renameSpeaker(String oldname, String newname) {
+        Log.d(TAG, "renameSpeaker() oldname = " + oldname + ", newname = " + newname);
+        exec("javascript:ranameSpeaker('" + oldname + "','" + newname + "');");
+    }
+
+    /**
+     * 设置字体大小
+     *
+     * @param size 字体大小
+     */
+    public void setFontSize(int size) {
+        Log.d(TAG, "setFontSize() size = " + size);
+        exec("javascript:setFontSize(" + size  + ");");
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -335,6 +373,12 @@ public class RichTextEditor extends WebView {
         }
     }
 
+    private void notifyClickSpeaker(SpeakerInfo speakerInfo) {
+        if (null != mLisenter) {
+            mLisenter.onClickSpeaker(speakerInfo);
+        }
+    }
+
     private void notifyUpdateContent(RichTextData richTextData) {
         if (null != mLisenter) {
             mLisenter.updateContent(richTextData);
@@ -367,6 +411,11 @@ public class RichTextEditor extends WebView {
         @Override
         public void clickMoreBtnItem(String itemJson, String json) {
             notifyClickMoreBtnItem(EditorUtils.parseMoreBtnItemInfo(itemJson), EditorUtils.parseBaseRichTextInfo(json));
+        }
+
+        @Override
+        public void clickSpeaker(String json) {
+            notifyClickSpeaker(EditorUtils.parseSpeakerInfo(json));
         }
 
         @Override

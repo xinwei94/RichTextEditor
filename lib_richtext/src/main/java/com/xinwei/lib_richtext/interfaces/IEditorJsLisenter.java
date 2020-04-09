@@ -14,6 +14,8 @@ public interface IEditorJsLisenter {
 
     void clickMoreBtnItem(String itemJson, String json);
 
+    void clickSpeaker(String json);
+
     void updateContent(String json);
 
     void saveDocFileContent(String content);

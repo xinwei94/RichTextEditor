@@ -57,6 +57,14 @@ public class EditorJsInterface {
     }
 
     @JavascriptInterface
+    public void clickSpeaker(String json) {
+        Log.d(TAG, "clickSpeaker() json = " + json);
+        if (null != mLisenter) {
+            mLisenter.clickSpeaker(json);
+        }
+    }
+
+    @JavascriptInterface
     public void updateContent(String json) {
         Log.d(TAG, "updateContent() json = " + json);
         if (null != mLisenter) {
