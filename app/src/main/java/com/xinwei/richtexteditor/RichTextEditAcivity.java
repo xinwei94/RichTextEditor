@@ -44,11 +44,14 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
 
     private RichTextEditor mEditor;
 
-    private Button mPlayBtn;
     private Button mEditBtn;
     private Button mSaveBtn;
     private Button mCancelBtn;
     private Button mSaveDocBtn;
+
+    private View mRightBtnPart;
+    private Button mPlayBtn;
+    private Button mSpeakerBtn;
     private Button mFontSizeBtn;
 
     private View mEditInsertPart;
@@ -67,6 +70,8 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
     private int mIndex;
     private double mStartTime;
 
+    private boolean mIsShowSpeaker;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,11 +86,14 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         mEditor.setLisenter(mEditorLisenter);
 
         mTitleTextView = findViewById(R.id.title_text);
-        mPlayBtn = findViewById(R.id.btn_play);
         mEditBtn = findViewById(R.id.btn_edit);
         mSaveBtn = findViewById(R.id.btn_save);
         mCancelBtn = findViewById(R.id.btn_cancel);
         mSaveDocBtn = findViewById(R.id.btn_doc);
+
+        mRightBtnPart = findViewById(R.id.right_btn_part);
+        mPlayBtn = findViewById(R.id.btn_play);
+        mSpeakerBtn = findViewById(R.id.btn_speaker);
         mFontSizeBtn = findViewById(R.id.btn_font_size);
 
         mEditInsertPart = findViewById(R.id.edit_insert_part);
@@ -98,6 +106,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         mSaveBtn.setOnClickListener(this);
         mCancelBtn.setOnClickListener(this);
         mSaveDocBtn.setOnClickListener(this);
+        mSpeakerBtn.setOnClickListener(this);
         mFontSizeBtn.setOnClickListener(this);
         mInsertTextBtn.setOnClickListener(this);
         mInsertImageBtn.setOnClickListener(this);
@@ -170,10 +179,9 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
     }
 
     private void changeEditBtnState(boolean isEdit) {
+        mRightBtnPart.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
         mEditBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
-        mPlayBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
         mSaveDocBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
-        mFontSizeBtn.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
         mSaveBtn.setVisibility(isEdit ? View.VISIBLE : View.GONE);
         mCancelBtn.setVisibility(isEdit ? View.VISIBLE : View.GONE);
         mEditInsertPart.setVisibility(isEdit ? View.VISIBLE : View.GONE);
@@ -209,7 +217,6 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
 
 
     private void saveDoc() {
-
         mEditor.saveDocFile(new IEditorSaveDocLisenter() {
             @Override
             public void onSaveContent(String content) {
@@ -219,8 +226,9 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
         });
     }
 
-    private void showSpeaker(boolean isShow) {
-        mEditor.setShowSpeaker(isShow);
+    private void changeShowSpeaker() {
+        mIsShowSpeaker = !mIsShowSpeaker;
+        mEditor.setShowSpeaker(mIsShowSpeaker);
     }
 
     private void showRenameDialog(final SpeakerInfo speakerInfo) {
@@ -386,6 +394,8 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
             case R.id.btn_font_size:
                 showFontSizeDialog();
                 break;
+            case R.id.btn_speaker:
+                changeShowSpeaker();
             default:
                 break;
         }

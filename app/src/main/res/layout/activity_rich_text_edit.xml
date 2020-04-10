@@ -65,23 +65,36 @@
         android:layout_gravity="left|bottom"
         android:text="导出文档"/>
 
-    <Button
-        android:id="@+id/btn_play"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <LinearLayout
+        android:id="@+id/right_btn_part"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="15dp"
+        android:gravity="center_horizontal"
         android:layout_gravity="right|bottom"
-        android:text="播放"/>
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_font_size"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="80dp"
-        android:layout_gravity="right|bottom"
-        android:textSize="9sp"
-        android:text="调节字体"/>
+        <Button
+            android:id="@+id/btn_speaker"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:textSize="9sp"
+            android:text="发言人"/>
+
+        <Button
+            android:id="@+id/btn_font_size"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:textSize="9sp"
+            android:text="调节字体"/>
+
+        <Button
+            android:id="@+id/btn_play"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="播放"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/edit_insert_part"
