@@ -295,6 +295,28 @@ public class RichTextEditor extends WebView {
     }
 
     /**
+     * 设置发言人颜色
+     *
+     * @param colorArray 色值
+     */
+    public void setSpeakerColor(String[] colorArray) {
+        if (null == colorArray || 0 == colorArray.length) {
+            Log.d(TAG, "setSpeakerColor() colorArray is null, do nothing");
+            return;
+        }
+
+        String colorStr = "[";
+        for (String color : colorArray) {
+            colorStr += ("'" + color + "',");
+        }
+        colorStr = colorStr.substring(0, colorStr.length() - 1);
+        colorStr += "]";
+        Log.d(TAG, "setSpeakerColor() colorStr = " + colorStr);
+
+        exec("javascript:setSpeakerColor(" + colorStr + ");");
+    }
+
+    /**
      * 设置字体大小
      *
      * @param size 字体大小

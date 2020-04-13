@@ -20,7 +20,7 @@ var mIsShowSpeaker = false;
 var mLastSpeakerId;
 var mSpeakerColorIndex = 0;
 var mSpeakerColorMap = new Map();
-var mSpeakerColorArray = ['#FF0000','#9ACD32','#0000FF','#008B00','#C71585','#EE9A49','#D15FEE','#8B5A00'];
+var mSpeakerColorArray = ['#057DFF','#F58F00','#9B96FF','#45CC9D'];
 
 //设置文本
 function setContent(json) {
@@ -369,7 +369,7 @@ function ranameSpeaker(id, newname) {
 	for (var i = 0; i < speakerList.length; i++) {
 		if (id == speakerList[i].dataset['speakerId']) {
 			speakerList[i].dataset['speakerName'] = newname;
-			speakerList[i].innerHTML = newname;
+			speakerList[i].innerHTML = newname  + ": ";
 		}
 	}
 
@@ -379,6 +379,16 @@ function ranameSpeaker(id, newname) {
 			commonList[i].dataset['speakerName'] = newname;
 		}
 	}
+}
+
+//设置发言人颜色
+function setSpeakerColor(colorArray) {
+	console.log('setSpeakerColor() colorArray = ' + colorArray);
+	if (null == colorArray || 0 == colorArray.length) {
+		return;
+	}
+
+	mSpeakerColorArray = colorArray;
 }
 
 //设置字体大小
@@ -415,7 +425,7 @@ function setFontSize(size) {
 function insertOrRemoveSpeakerLineFeed(isInsert, speakerNode) {
 	var preNode = speakerNode.previousSibling;  //得到上一个兄弟节点
 	if (isInsert && null != preNode) {
-		var span = createLineFeedElement("speaker-line-feed", "30px");
+		var span = createLineFeedElement("speaker-line-feed", 20);
 		document.getElementById('content').insertBefore(span, speakerNode);
 	} else {
 		if (null != preNode && preNode.id == "speaker-line-feed") {
@@ -512,7 +522,7 @@ function createSpeakerElement(speakerId, speakerName, index, size, isEdit, isSho
 	var span = document.createElement('span');
 	span.dataset['speakerId'] = speakerId;
 	span.dataset['speakerName'] = speakerName;
-	span.innerHTML = speakerName;
+	span.innerHTML = speakerName + ": ";
 	span.className = 'speaker-text';
 	span.style.color = getSpeakerColor(speakerId);
 	span.style.display = isShow ? "inline" : "none";
@@ -563,7 +573,7 @@ function createLineFeedElement(id, marginTop) {
 	var span = document.createElement('span');
 	span.id = id;
 	span.style.display = "block";	
-	span.style.marginTop = marginTop;
+	span.style.marginTop = marginTop + "px";
 
 	return span;
 }

@@ -88,7 +88,7 @@ public class RichTextCreateActivity extends Activity implements View.OnClickList
         double endTime = startTime + 1;
         String content = mContentArray[mIndex % mContentArray.length];
         String speakerId = (mSpeakerIndex++ / 10) + "";
-        String speakerName = "发言人" + speakerId + ":";
+        String speakerName = "发言人" + speakerId;
         if (mSpeakerIndex >= 50) mSpeakerIndex = 0;
 
         mEditor.addText(mIndex, startTime, endTime, content, speakerId, speakerName);
