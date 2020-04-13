@@ -7,17 +7,17 @@ package com.xinwei.lib_richtext.entities;
 
 public class TextRichInfo extends BaseRichTextInfo {
 
-    private String speaker;
+    private SpeakerInfo speakerInfo;
 
     public TextRichInfo() {
         setType(RichTextType.TYPE_TEXT);
     }
 
-    public String getSpeaker() {
-        return speaker;
+    public SpeakerInfo getSpeakerInfo() {
+        return speakerInfo;
     }
 
-    public void setSpeaker(String speaker) {
-        this.speaker = speaker;
+    public void setSpeakerInfo(SpeakerInfo speakerInfo) {
+        this.speakerInfo = speakerInfo;
     }
 }

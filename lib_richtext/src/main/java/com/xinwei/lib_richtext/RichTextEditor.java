@@ -123,12 +123,29 @@ public class RichTextEditor extends WebView {
      * @param startTime 文本起始时间
      * @param endTime   文本结束时间
      * @param content   文本内容
-     * @param speaker   发言人
      */
-    public void addText(int index, double startTime, double endTime, String content, String speaker) {
-        Log.d(TAG, "addText() index = " + index + ", startTime = " + startTime
-                + ", endTime = " + endTime + ", content = " + content);
-        exec("javascript:addText('" + content + "','" + index + "','" + startTime + "','" + endTime + "','" + speaker + "', true);");
+    public void addText(int index, double startTime, double endTime, String content) {
+        addText(index, startTime, endTime, content, null, null);
+    }
+
+    /**
+     * 添加文本
+     *
+     * @param index       文本序号
+     * @param startTime   文本起始时间
+     * @param endTime     文本结束时间
+     * @param content     文本内容
+     * @param speakerId   发言人ID
+     * @param speakerName 发言人名称
+     */
+    public void addText(int index, double startTime, double endTime, String content, String speakerId, String speakerName) {
+        Log.d(TAG, "addText() index = " + index + ", startTime = " + startTime + ", endTime = " + endTime
+                + ", speakerId = " + speakerId + ", speakerName = " + speakerName + ", content = " + content);
+        if (null == speakerId) speakerId = "";
+        if (null == speakerName) speakerName = "";
+
+        exec("javascript:addText('" + content + "','" + index + "','" + startTime + "','"
+                + endTime + "','" + speakerId + "','" + speakerName + "', true);");
     }
 
     /**
@@ -263,7 +280,7 @@ public class RichTextEditor extends WebView {
      */
     public void setShowSpeaker(boolean isShow) {
         Log.d(TAG, "setShowSpeaker() isShow = " + isShow);
-        exec("javascript:setShowSpeaker(" + isShow  + ");");
+        exec("javascript:setShowSpeaker(" + isShow + ");");
     }
 
     /**
@@ -284,7 +301,7 @@ public class RichTextEditor extends WebView {
      */
     public void setFontSize(int size) {
         Log.d(TAG, "setFontSize() size = " + size);
-        exec("javascript:setFontSize(" + size  + ");");
+        exec("javascript:setFontSize(" + size + ");");
     }
 
     @SuppressLint("SetJavaScriptEnabled")

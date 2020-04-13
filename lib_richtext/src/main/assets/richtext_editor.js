@@ -17,7 +17,7 @@ var mFontSize = 0;//字体大小
 
 //发言人相关
 var mIsShowSpeaker = false;
-var mLastSpeaker;
+var mLastSpeakerId;
 var mSpeakerColorIndex = 0;
 var mSpeakerColorMap = new Map();
 var mSpeakerColorArray = ['#FF0000','#9ACD32','#0000FF','#008B00','#C71585','#EE9A49','#D15FEE','#8B5A00'];
@@ -51,7 +51,8 @@ function refreshContent(datalist) {
 		} else if (TYPE_IMAGE_TEXT == type) {
 			addImageWithText(datalist[i].imageUrl, datalist[i].index, datalist[i].startTime, datalist[i].content, false);
 		} else {
-			addText(datalist[i].content, datalist[i].index, datalist[i].startTime, datalist[i].endTime, datalist[i].speaker, false);
+			addText(datalist[i].content, datalist[i].index, datalist[i].startTime, datalist[i].endTime, 
+				datalist[i].speakerInfo.id, datalist[i].speakerInfo.name, false);
 		}
 		
 	}
@@ -165,18 +166,18 @@ function cancelEdit() {
 }
 
 //添加文本
-function addText(content, index, startTime, endTime, speaker, isScroll) {
+function addText(content, index, startTime, endTime, speakerId, speakerName, isScroll) {
 	console.log('addText() index = ' + index + ", startTime = " + startTime 
-		+ ", endTime = " + endTime + ", isScroll = " + isScroll + ", speaker = " + speaker + ", content = " + content);
+		+ ", endTime = " + endTime + ", isScroll = " + isScroll 
+		+ ", speakerId = " + speakerId + ", speakerName = " + speakerName + ", content = " + content);
 	
-	var span = createTextElement(content, index, startTime, endTime, speaker, mFontSize, mIsEdit); 
+	var span = createTextElement(content, index, startTime, endTime, speakerId, speakerName, mFontSize, mIsEdit); 
 	document.getElementById('content').appendChild(span);
-
-	if (null != speaker && mLastSpeaker != speaker) {
-		var speakerSpan = createSpeakerElement(speaker, index, mFontSize, mIsEdit, mIsShowSpeaker);
+	if (null != speakerId && null != speakerName && mLastSpeakerId != speakerId) {
+		var speakerSpan = createSpeakerElement(speakerId, speakerName, index, mFontSize, mIsEdit, mIsShowSpeaker);
 		document.getElementById('content').insertBefore(speakerSpan, span);
 		insertOrRemoveSpeakerLineFeed(mIsShowSpeaker, speakerSpan);
-		mLastSpeaker = speaker;
+		mLastSpeakerId = speakerId;
 	}
 
 	//滚动以确保元素显示
@@ -191,7 +192,7 @@ function insertText(content, index, startTime, endTime, isScroll) {
 		+ ", endTime = " + endTime + ", isScroll = " + isScroll + ", content = " + content);
 
 	var nextElement = getInsertPositionElement(startTime);
-	var span = createTextElement(content, index, startTime, endTime, null, mFontSize, mIsEdit);
+	var span = createTextElement(content, index, startTime, endTime, null, null, mFontSize, mIsEdit);
 	document.getElementById('content').insertBefore(span, nextElement);
 
 	if (isScroll) {
@@ -362,20 +363,20 @@ function setShowSpeaker(isShow) {
 
 
 //发言人重命名
-function ranameSpeaker(oldname, newname) {
-	console.log('ranameSpeaker() oldname = ' + oldname + ', newname' + newname);
+function ranameSpeaker(id, newname) {
+	console.log('ranameSpeaker() id = ' + id + ', newname = ' + newname);
 	var speakerList = document.getElementsByClassName('speaker-text');
 	for (var i = 0; i < speakerList.length; i++) {
-		if (oldname == speakerList[i].dataset['speaker']) {
-			speakerList[i].dataset['speaker'] = newname;
+		if (id == speakerList[i].dataset['speakerId']) {
+			speakerList[i].dataset['speakerName'] = newname;
 			speakerList[i].innerHTML = newname;
 		}
 	}
 
 	var commonList = document.getElementsByClassName('common-text');
 	for (var i = 0; i < commonList.length; i++) {
-		if (oldname == commonList[i].dataset['speaker']) {
-			commonList[i].dataset['speaker'] = newname;
+		if (id == commonList[i].dataset['speakerId']) {
+			commonList[i].dataset['speakerName'] = newname;
 		}
 	}
 }
@@ -491,27 +492,29 @@ function getInsertPositionElement(startTime) {
 	return nextElement;
 }
 
-function createTextElement(content, index, startTime, endTime, speaker, size, isEdit) {
+function createTextElement(content, index, startTime, endTime, speakerId, speakerName, size, isEdit) {
 	var span = document.createElement('span');
 	span.dataset['index'] = index;
 	span.dataset['startTime'] = startTime;
 	span.dataset['endTime'] = endTime;
-	span.dataset['speaker'] = speaker;
 	span.innerHTML = content;
 	span.className = isEdit ? 'edit-text' : 'common-text';
 	span.setAttribute("contenteditable", isEdit);
 	span.addEventListener("click", textClick); 
 	if (size > 0) span.style.fontSize = size + 'px';
+	if (null != speakerId) span.dataset['speakerId'] = speakerId;
+	if (null != speakerName) span.dataset['speakerName'] = speakerName;
 
 	return span;
 }
 
-function createSpeakerElement(speaker, index, size, isEdit, isShow) {
+function createSpeakerElement(speakerId, speakerName, index, size, isEdit, isShow) {
 	var span = document.createElement('span');
-	span.dataset['speaker'] = speaker;
-	span.innerHTML = speaker;
+	span.dataset['speakerId'] = speakerId;
+	span.dataset['speakerName'] = speakerName;
+	span.innerHTML = speakerName;
 	span.className = 'speaker-text';
-	span.style.color = getSpeakerColor(speaker);
+	span.style.color = getSpeakerColor(speakerId);
 	span.style.display = isShow ? "inline" : "none";
 	span.setAttribute("contenteditable", isEdit);
 	span.addEventListener("click", speakerClick); 
@@ -566,8 +569,8 @@ function createLineFeedElement(id, marginTop) {
 }
 
 //获取发言人颜色
-function getSpeakerColor(speaker) {
-	var color = mSpeakerColorMap.get(speaker);
+function getSpeakerColor(speakerId) {
+	var color = mSpeakerColorMap.get(speakerId);
 	if (null != color) {
 		return color;
 	}
@@ -577,7 +580,7 @@ function getSpeakerColor(speaker) {
 	}
 
 	color = mSpeakerColorArray[mSpeakerColorIndex++];
-	mSpeakerColorMap.set(speaker, color);
+	mSpeakerColorMap.set(speakerId, color);
 	return color;
 }
 
@@ -615,14 +618,15 @@ function getTextData(elm) {
 		"index": elm.dataset['index'], 
 		"startTime": elm.dataset['startTime'], 
 		"endTime": elm.dataset['endTime'],
-		"speaker": elm.dataset['speaker'],
+		"speakerInfo": getSpeakerData(elm),
 		"content": elm.innerHTML};
 }
 
 //获取发言人元素数据
 function getSpeakerData(elm) {
 	return {
-		"name": elm.dataset['speaker']};
+		"id": elm.dataset['speakerId'],
+		"name": elm.dataset['speakerName']};
 }
 
 //获取图片元素数据

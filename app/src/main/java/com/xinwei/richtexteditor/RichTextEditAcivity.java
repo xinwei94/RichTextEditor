@@ -247,7 +247,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
                     public void run() {
                         Log.d(TAG, "onClickPositive() run " + Thread.currentThread().getName());
                         String name = editText.getText().toString();
-                        mEditor.renameSpeaker(speakerInfo.getName(), name);
+                        mEditor.renameSpeaker(speakerInfo.getId(), name);
                     }
                 });
                 dialog.dismiss();
