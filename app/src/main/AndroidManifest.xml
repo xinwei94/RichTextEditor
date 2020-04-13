@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".RichTextCreateActivity" />
-        <activity android:name=".RichTextEditAcivity" />
+        <activity android:name=".RichTextEditActivity" />
 
     </application>
 </manifest>

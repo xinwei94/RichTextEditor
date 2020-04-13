@@ -47,7 +47,7 @@ public class RichTextMainActivity extends Activity {
     }
 
     public void goRichTextEidt(View view) {
-        startActivity(new Intent(this, RichTextEditAcivity.class));
+        startActivity(new Intent(this, RichTextEditActivity.class));
     }
 
     public void finishPage(View view) {

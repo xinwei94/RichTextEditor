@@ -44,6 +44,7 @@ function refreshContent(datalist) {
 	}
 
 	var type;//插入类型：0（纯文本），1（图片），2（图片加文字）
+	var speakerId, speakerName; 
 	for (var i = 0; i < datalist.length; i++) {
 		type = datalist[i].type;
 		if (TYPE_IMAGE == type) {
@@ -51,8 +52,16 @@ function refreshContent(datalist) {
 		} else if (TYPE_IMAGE_TEXT == type) {
 			addImageWithText(datalist[i].imageUrl, datalist[i].index, datalist[i].startTime, datalist[i].content, false);
 		} else {
+			if (null == datalist[i].speakerInfo) {
+				speakerId = null;
+				speakerName = null;
+			} else {
+				speakerId = datalist[i].speakerInfo.id;
+				speakerName = datalist[i].speakerInfo.name;
+			}
+
 			addText(datalist[i].content, datalist[i].index, datalist[i].startTime, datalist[i].endTime, 
-				datalist[i].speakerInfo.id, datalist[i].speakerInfo.name, false);
+				speakerId, speakerName, false);
 		}
 		
 	}

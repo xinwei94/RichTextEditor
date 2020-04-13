@@ -11,6 +11,9 @@ public class SpeakerInfo {
 
     private String name;
 
+    public SpeakerInfo() {
+    }
+
     public SpeakerInfo(String id, String name) {
         this.id = id;
         this.name = name;

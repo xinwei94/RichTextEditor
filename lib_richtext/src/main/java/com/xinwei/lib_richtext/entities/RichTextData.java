@@ -11,6 +11,9 @@ public class RichTextData {
 
     List<BaseRichTextInfo> datalist;
 
+    public RichTextData() {
+    }
+
     public RichTextData(List<BaseRichTextInfo> dataList) {
         this.datalist = dataList;
     }

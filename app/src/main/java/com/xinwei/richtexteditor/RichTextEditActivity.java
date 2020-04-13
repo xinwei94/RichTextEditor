@@ -36,9 +36,9 @@ import java.util.TimerTask;
 /**
  * Created by xinwei2 on 2020/3/5
  */
-public class RichTextEditAcivity extends Activity implements View.OnClickListener {
+public class RichTextEditActivity extends Activity implements View.OnClickListener {
 
-    private static final String TAG = "RichTextEditAcivity";
+    private static final String TAG = "RichTextEditActivity";
 
     private TextView mTitleTextView;
 
@@ -175,7 +175,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
     }
 
     private void showToast(String text) {
-        Toast.makeText(RichTextEditAcivity.this, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RichTextEditActivity.this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void changeEditBtnState(boolean isEdit) {
@@ -232,9 +232,9 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
     }
 
     private void showRenameDialog(final SpeakerInfo speakerInfo) {
-        final EditText editText = new EditText(RichTextEditAcivity.this);
+        final EditText editText = new EditText(RichTextEditActivity.this);
         editText.setText(speakerInfo.getName());
-        AlertDialog.Builder builder = new AlertDialog.Builder(RichTextEditAcivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(RichTextEditActivity.this);
         builder.setTitle("发言人重命名");
         builder.setView(editText);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -264,7 +264,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
     }
 
     private void showFontSizeDialog() {
-        final SeekBar seekBar = new SeekBar(RichTextEditAcivity.this);
+        final SeekBar seekBar = new SeekBar(RichTextEditActivity.this);
         seekBar.setMax(50);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -283,7 +283,7 @@ public class RichTextEditAcivity extends Activity implements View.OnClickListene
             }
         });
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(RichTextEditAcivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(RichTextEditActivity.this);
         builder.setTitle("调节字体");
         builder.setView(seekBar);
         builder.setNegativeButton("关闭", new DialogInterface.OnClickListener() {

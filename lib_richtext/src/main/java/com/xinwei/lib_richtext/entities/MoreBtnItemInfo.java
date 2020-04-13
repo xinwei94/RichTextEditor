@@ -11,6 +11,9 @@ public class MoreBtnItemInfo {
 
     private String text;
 
+    public MoreBtnItemInfo() {
+    }
+
     public MoreBtnItemInfo(int type, String text) {
         this.type = type;
         this.text = text;
